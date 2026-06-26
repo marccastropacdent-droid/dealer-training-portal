@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pac-Dent Dealer Training Hub</title>
+  <style>
+    :root{
+      --pd-blue:#073b73;
+      --pd-blue-2:#082f5f;
+      --pd-orange:#f26922;
+      --pd-orange-2:#d94f0f;
+      --pd-text:#1f2937;
+      --pd-muted:#667085;
+      --pd-bg:#f5f8fc;
+      --pd-card:#ffffff;
+      --pd-border:#dce5f2;
+      --pd-shadow:0 16px 45px rgba(7,59,115,.12);
+      --pd-radius:18px;
+    }
+    *{box-sizing:border-box}
+    [hidden]{display:none !important}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color:var(--pd-text);
+      background:linear-gradient(180deg,#ffffff 0%, var(--pd-bg) 100%);
+    }
+    a{color:inherit;text-decoration:none}
+    button,input{font:inherit}
+    .portal-shell{min-height:100vh; animation:portalReveal .38s ease both}
+    @keyframes portalReveal{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    .access-toast{position:fixed;top:18px;left:50%;transform:translate(-50%,-14px);opacity:0;pointer-events:none;z-index:80;background:#073b73;color:#fff;border:1px solid rgba(255,255,255,.25);box-shadow:0 16px 40px rgba(7,59,115,.26);border-radius:999px;padding:12px 18px;font-weight:900;transition:.25s ease}
+    .access-toast.show{opacity:1;transform:translate(-50%,0)}
+    .topbar{
+      background:linear-gradient(90deg,var(--pd-blue-2),var(--pd-blue));
+      color:#fff;
+      position:sticky;
+      top:0;
+      z-index:10;
+      box-shadow:0 8px 20px rgba(0,0,0,.12);
+    }
+    .topbar-inner{
+      max-width:1180px;
+      margin:0 auto;
+      padding:14px 22px;
+      display:flex;
+      align-items:center;
+      gap:24px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:max-content;
+    }
+    .brand-mark{
+      width:132px;
+      height:42px;
+      border-radius:12px;
+      background:#fff;
+      display:grid;
+      place-items:center;
+      color:var(--pd-blue);
+      font-weight:900;
+      font-style:italic;
+      letter-spacing:-1px;
+      position:relative;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);
+    }
+    .brand-mark:before{
+      content:"";
+      position:absolute;
+      width:88px;
+      height:22px;
+      border-top:6px solid #f3a51d;
+      border-radius:100%;
+      transform:rotate(-7deg);
+      top:6px;
+      left:12px;
+      opacity:.95;
+    }
+    .brand-text{position:relative; z-index:1; font-size:22px;}
+    .nav{display:flex;align-items:center;gap:18px;font-size:14px;flex:1}
+    .nav a{opacity:.92; padding:10px 0; border-bottom:2px solid transparent}
+    .nav a.active{border-color:var(--pd-orange); opacity:1}
+    .user-chip{display:flex;align-items:center;gap:10px;font-size:13px;white-space:nowrap}
+    .avatar{width:34px;height:34px;border-radius:50%;background:#e8f1ff;color:var(--pd-blue);font-weight:800;display:grid;place-items:center}
+    .hamburger{display:none;margin-left:auto;background:transparent;border:0;color:#fff;font-size:28px;line-height:1}
+    .hero{
+      max-width:1180px;
+      margin:0 auto;
+      padding:54px 22px 30px;
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:36px;
+      align-items:center;
+    }
+    .eyebrow{color:var(--pd-orange);font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:13px;margin-bottom:10px}
+    h1{font-size:clamp(34px,5vw,58px);line-height:1.02;margin:0 0 18px;color:#09264b;letter-spacing:-.04em}
+    .hero p{font-size:18px;line-height:1.65;color:var(--pd-muted);max-width:590px;margin:0 0 24px}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{
+      border:1px solid transparent;
+      border-radius:12px;
+      padding:13px 18px;
+      font-weight:800;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height:48px;
+      transition:.2s ease;
+    }
+    .btn-primary{background:var(--pd-orange);color:#fff;box-shadow:0 10px 22px rgba(242,105,34,.28)}
+    .btn-primary:hover{background:var(--pd-orange-2);transform:translateY(-1px)}
+    .btn-outline{background:#fff;color:var(--pd-blue);border-color:#a9bfd8}
+    .btn-outline:hover{border-color:var(--pd-blue);box-shadow:0 8px 18px rgba(7,59,115,.1)}
+    .hero-visual{
+      min-height:340px;
+      border-radius:28px;
+      background:
+        radial-gradient(circle at 70% 40%, rgba(242,105,34,.18) 0 13%, transparent 14%),
+        radial-gradient(circle at 66% 43%, rgba(7,59,115,.14) 0 36%, transparent 37%),
+        linear-gradient(135deg,#f7fbff,#eaf2fc);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      overflow:hidden;
+      box-shadow:var(--pd-shadow);
+      border:1px solid #e4ecf6;
+    }
+    .hero-visual:before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:radial-gradient(rgba(7,59,115,.10) 1px, transparent 1px);
+      background-size:18px 18px;
+      mask-image:linear-gradient(90deg,transparent,black 35%,black 100%);
+    }
+    .device{
+      position:relative;
+      width:min(350px,80%);
+      aspect-ratio:1.05/1;
+      border-radius:28px 28px 22px 22px;
+      background:linear-gradient(180deg,#121923,#04070c 58%,#f7f9fc 59%,#e9eef5 100%);
+      box-shadow:0 24px 42px rgba(4,12,25,.34);
+      border:1px solid rgba(255,255,255,.45);
+    }
+    .device:before{
+      content:"";
+      position:absolute;
+      left:17%; right:17%; top:13%; height:28%;
+      border-radius:12px;
+      background:linear-gradient(180deg,#0a1727,#3a4c62);
+      border:6px solid #2f3b4b;
+      box-shadow:inset 0 0 18px rgba(75,185,255,.42);
+    }
+    .screen{
+      position:absolute;
+      left:31%; right:31%; bottom:24%; height:18%;
+      border-radius:8px;
+      background:linear-gradient(180deg,#0b3772,#071e42);
+      color:#fff;
+      display:grid;
+      place-items:center;
+      font-weight:900;
+      letter-spacing:.04em;
+      font-size:22px;
+      box-shadow:0 0 0 2px rgba(255,255,255,.12), inset 0 0 18px rgba(255,255,255,.09);
+    }
+    .floating-tag{
+      position:absolute;
+      background:#fff;
+      border:1px solid var(--pd-border);
+      border-radius:999px;
+      padding:9px 13px;
+      box-shadow:0 8px 22px rgba(7,59,115,.11);
+      font-size:13px;
+      font-weight:800;
+      color:var(--pd-blue);
+    }
+    .tag-1{top:35px;right:28px}.tag-2{bottom:42px;left:28px}.tag-3{bottom:38px;right:58px}
+    .content{max-width:1180px;margin:0 auto;padding:16px 22px 70px}
+    .toolbar{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:16px;
+      align-items:center;
+      margin:10px 0 16px;
+    }
+    .search{
+      position:relative;
+    }
+    .search input{
+      width:100%;
+      height:52px;
+      padding:0 18px 0 46px;
+      border:1px solid var(--pd-border);
+      border-radius:14px;
+      background:#fff;
+      outline:none;
+      box-shadow:0 8px 20px rgba(7,59,115,.05);
+    }
+    .search svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#667085}
+    .select{
+      height:52px;
+      border:1px solid var(--pd-border);
+      background:#fff;
+      border-radius:14px;
+      padding:0 14px;
+      color:#344054;
+      min-width:150px;
+    }
+    .chips{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 28px}
+    .chip{
+      border:1px solid var(--pd-border);
+      background:#fff;
+      color:#344054;
+      border-radius:999px;
+      padding:9px 14px;
+      cursor:pointer;
+      font-size:14px;
+      font-weight:800;
+    }
+    .chip.active{background:#0b66c3;color:#fff;border-color:#0b66c3}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:24px 0 14px}
+    .section-head h2{margin:0;color:#0b2446;font-size:24px;letter-spacing:-.02em}
+    .section-head p{margin:6px 0 0;color:var(--pd-muted)}
+    .video-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+    }
+    .video-card{
+      background:var(--pd-card);
+      border:1px solid var(--pd-border);
+      border-radius:var(--pd-radius);
+      overflow:hidden;
+      box-shadow:0 12px 28px rgba(7,59,115,.07);
+      display:flex;
+      flex-direction:column;
+      min-height:100%;
+    }
+    .thumb{
+      height:150px;
+      position:relative;
+      overflow:hidden;
+      background:linear-gradient(135deg,#dfe9f5,#fff);
+      display:grid;
+      place-items:center;
+    }
+    .thumb.dark{background:linear-gradient(135deg,#101723,#29425f)}
+    .thumb.red{background:linear-gradient(135deg,#fff,#eef4fb)}
+    .thumb.green{background:linear-gradient(135deg,#effbf6,#ffffff)}
+    .thumb.people{background:linear-gradient(135deg,#dbe6f2,#fff4ef)}
+    .thumb-title{font-size:22px;font-weight:900;color:#0b2446;text-align:center;line-height:1.05;letter-spacing:-.02em;padding:0 16px}
+    .thumb.dark .thumb-title{color:#fff}
+    .play{
+      width:54px;height:54px;border-radius:50%;
+      background:rgba(255,255,255,.92);
+      display:grid;place-items:center;
+      color:var(--pd-orange);
+      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+      box-shadow:0 12px 24px rgba(0,0,0,.22);
+    }
+    .play:before{content:"";border-left:15px solid currentColor;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px}
+    .badge{
+      position:absolute;left:12px;top:12px;border-radius:8px;padding:5px 8px;color:#fff;font-weight:900;font-size:12px;background:var(--pd-orange);
+    }
+    .badge.blue{background:#0b66c3}.badge.green{background:#57a630}
+    .duration{position:absolute;right:10px;bottom:10px;background:rgba(0,0,0,.72);color:#fff;border-radius:8px;padding:4px 7px;font-size:12px;font-weight:800}
+    .card-body{padding:16px;display:flex;flex-direction:column;gap:10px;flex:1}
+    .card-body h3{margin:0;color:#0b2446;font-size:17px;line-height:1.25}
+    .card-body p{margin:0;color:var(--pd-muted);font-size:14px;line-height:1.45;flex:1}
+    .pill{align-self:flex-start;font-size:12px;font-weight:800;border-radius:999px;padding:5px 8px;background:#e9f2ff;color:#0b66c3}
+    .pill.green{background:#eaf8e5;color:#3c831f}.pill.orange{background:#fff1e8;color:#c84f0c}
+    .watch-btn{
+      width:100%;
+      border:1px solid #a9bfd8;
+      background:#fff;
+      color:var(--pd-blue);
+      border-radius:11px;
+      padding:11px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .watch-btn:hover{border-color:var(--pd-blue);background:#f7fbff}
+    .resource-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    .resource-card{
+      background:#fff;border:1px solid var(--pd-border);border-radius:16px;padding:16px;display:flex;align-items:center;gap:13px;box-shadow:0 8px 22px rgba(7,59,115,.05)
+    }
+    .file-icon{width:44px;height:52px;border-radius:10px 10px 10px 4px;background:#ef3d2f;color:#fff;display:grid;place-items:center;font-weight:900;flex:0 0 auto}
+    .file-icon.blue{background:#0b66c3}.file-icon.green{background:#57a630}.file-icon.orange{background:var(--pd-orange)}
+    .resource-card strong{display:block;color:#0b2446;font-size:14px;margin-bottom:4px}
+    .resource-card span{font-size:12px;color:var(--pd-muted)}
+    .empty{display:none;background:#fff;border:1px dashed #b8c8dc;border-radius:16px;padding:30px;text-align:center;color:var(--pd-muted)}
+    .modal{
+      position:fixed;inset:0;background:rgba(3,12,24,.78);display:none;align-items:center;justify-content:center;padding:22px;z-index:50
+    }
+    .modal.open{display:flex}
+    .modal-card{background:#071c36;border-radius:20px;max-width:960px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.45);overflow:hidden;color:#fff}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.12)}
+    .modal-head h3{margin:0;font-size:18px}.close{border:0;background:rgba(255,255,255,.12);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:22px}
+    .video-frame{aspect-ratio:16/9;background:#000}
+    .video-frame iframe{width:100%;height:100%;border:0;display:block}
+    .login-screen{
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      background:linear-gradient(135deg,#f7fbff,#ffffff 45%,#eef5fc);
+      transition:opacity .25s ease, transform .25s ease;
+    }
+    .login-card{
+      width:min(450px,100%);
+      background:#fff;
+      border:1px solid var(--pd-border);
+      border-radius:24px;
+      box-shadow:var(--pd-shadow);
+      padding:34px;
+      text-align:center;
+    }
+    .login-card .brand-mark{margin:0 auto 22px;width:150px;height:48px}
+    .lock-icon{width:68px;height:68px;border:3px solid var(--pd-blue);border-radius:22px;display:grid;place-items:center;margin:0 auto 18px;color:var(--pd-blue);font-size:30px}
+    .login-card h1{font-size:34px;margin-bottom:10px}
+    .login-card p{color:var(--pd-muted);line-height:1.55;margin:0 0 22px}
+    .field{margin:14px 0;text-align:left}
+    .field label{display:block;font-size:13px;font-weight:800;color:#344054;margin:0 0 7px}
+    .field input{width:100%;height:50px;border:1px solid var(--pd-border);border-radius:12px;padding:0 14px;outline:none}
+    .full{width:100%;margin-top:8px}
+    .helper{font-size:12px;color:#667085;margin-top:16px;border-top:1px solid var(--pd-border);padding-top:18px}
+    .error{display:none;color:#b42318;background:#fff2f0;border:1px solid #ffccc7;border-radius:10px;padding:10px;margin-top:12px;font-size:13px;text-align:left}
+    .logout{border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;border-radius:999px;padding:8px 12px;font-weight:800;cursor:pointer}
+    @media(max-width:1020px){
+      .video-grid{grid-template-columns:repeat(2,1fr)}
+      .resource-grid{grid-template-columns:repeat(2,1fr)}
+      .hero{grid-template-columns:1fr}.hero-visual{min-height:280px}
+      .nav,.user-chip{display:none}.hamburger{display:block}
+    }
+    @media(max-width:640px){
+      .topbar-inner{padding:12px 16px}.brand-mark{width:120px;height:38px}.brand-text{font-size:20px}
+      .hero{padding:34px 16px 22px}.content{padding:8px 16px 44px}
+      .hero p{font-size:16px}.hero-actions .btn{width:100%}
+      .toolbar{grid-template-columns:1fr}.select{width:100%}
+      .chips{overflow-x:auto;flex-wrap:nowrap;padding-bottom:8px}.chip{white-space:nowrap}
+      .video-grid{grid-template-columns:1fr;gap:14px}.video-card{display:grid;grid-template-columns:128px 1fr;min-height:0}.thumb{height:auto;min-height:156px}.card-body{padding:12px}.watch-btn{padding:9px}.card-body h3{font-size:16px}.card-body p{font-size:13px}.play{width:44px;height:44px}
+      .resource-grid{grid-template-columns:1fr}.section-head{align-items:start;flex-direction:column}
+      .login-card{padding:26px 20px}.login-card h1{font-size:29px}
+      .floating-tag{display:none}.device{width:75%}
+    }
+    @media(max-width:420px){.video-card{grid-template-columns:1fr}.thumb{height:155px}.topbar{position:relative}}
+  </style>
+</head>
+<body>
+  <div id="loginScreen" class="login-screen">
+    <form class="login-card" id="loginForm">
+      <div class="brand-mark"><span class="brand-text">Pac-Dent</span></div>
+      <div class="lock-icon">⌁</div>
+      <h1>Dealer Sales Rep Training Portal</h1>
+      <p>Access product training videos, sales tools, and resources built for your success.</p>
+      <div class="field">
+        <label for="accessCode">Password</label>
+        <input id="accessCode" type="password" placeholder="Enter password" autocomplete="current-password" />
+      </div>
+      <button class="btn btn-primary full" type="submit">Enter Training Hub</button>
+      <div id="loginError" class="error">Invalid password. Replace the demo password in the HTML with your own password, or connect this page to a secure login system.</div>
+      <div class="helper">Secure access for authorized dealer reps only.</div>
+    </form>
+  </div>
+
+  <div id="accessToast" class="access-toast" role="status" aria-live="polite">Access granted — Training Hub is now open.</div>
+
+  <main id="portal" class="portal-shell" hidden>
+    <section id="top" class="hero">
+      <div>
+        <div class="eyebrow">Private Training Library</div>
+        <h1>Dealer Training Hub</h1>
+        <p>Your one-stop destination for product training, sales tools, and resources to help you sell with confidence and support customers more effectively.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#training">▶ Start Watching</a>
+          <a class="btn btn-outline" href="#resources">⇩ Download Sales Materials</a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <div class="device"><div class="screen">5000</div></div>
+        <span class="floating-tag tag-1">Rodin 3D</span>
+        <span class="floating-tag tag-2">Sales Tools</span>
+        <span class="floating-tag tag-3">New Launches</span>
+      </div>
+    </section>
+
+    <section id="training" class="content">
+      <div class="section-head">
+        <div>
+          <h2>Featured Training Videos</h2>
+          <p>Search by product, topic, or sales category.</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <label class="search" aria-label="Search training videos">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input id="searchInput" type="search" placeholder="Search training videos, topics, or resources..." />
+        </label>
+        <select id="sortSelect" class="select" aria-label="Sort videos">
+          <option value="default">Sort: Newest</option>
+          <option value="az">Sort: A-Z</option>
+        </select>
+      </div>
+
+      <div class="chips" role="list" aria-label="Video filters">
+        <button class="chip active" data-filter="all" type="button">All</button>
+        <button class="chip" data-filter="New Products" type="button">New Products</button>
+        <button class="chip" data-filter="Rodin 3D" type="button">Rodin 3D</button>
+        <button class="chip" data-filter="Restoratives" type="button">Restoratives</button>
+        <button class="chip" data-filter="Promotions" type="button">Promotions</button>
+        <button class="chip" data-filter="Sales Tips" type="button">Sales Tips</button>
+      </div>
+
+      <div id="videoGrid" class="video-grid">
+        <article class="video-card" data-title="Rodin Chroma Flash" data-category="New Products Rodin 3D" data-order="1">
+          <div class="thumb dark"><span class="badge">NEW</span><div class="thumb-title">Rodin<br>Chroma Flash</div><div class="play"></div><span class="duration">5:12</span></div>
+          <div class="card-body"><h3>Rodin Chroma Flash</h3><p>Explore the latest features and benefits of the Rodin Chroma Flash post-curing unit.</p><span class="pill">New Products</span><button class="watch-btn" data-video="https://player.vimeo.com/video/000000000" data-video-title="Rodin Chroma Flash" type="button">▶ Watch Now</button></div>
+        </article>
+        <article class="video-card" data-title="EZAim Family Training" data-category="New Products Sales Tips" data-order="2">
+          <div class="thumb red"><span class="badge blue">5 MIN</span><div class="thumb-title">EZAim<br>Family</div><div class="play"></div><span class="duration">4:58</span></div>
+          <div class="card-body"><h3>EZAim Family Training</h3><p>Learn how EZAim products help customers achieve predictable, accurate radiographs.</p><span class="pill orange">New Products</span><button class="watch-btn" data-video="https://player.vimeo.com/video/000000000" data-video-title="EZAim Family Training" type="button">▶ Watch Now</button></div>
+        </article>
+        <article class="video-card" data-title="OptiComp Overview" data-category="Restoratives" data-order="3">
+          <div class="thumb"><span class="badge blue">5 MIN</span><div class="thumb-title">OptiComp<br>Overview</div><div class="play"></div><span class="duration">6:03</span></div>
+          <div class="card-body"><h3>OptiComp Overview</h3><p>A deep dive into the benefits, indications, and talking points for OptiComp composite restorative.</p><span class="pill">Restoratives</span><button class="watch-btn" data-video="https://player.vimeo.com/video/000000000" data-video-title="OptiComp Overview" type="button">▶ Watch Now</button></div>
+        </article>
+        <article class="video-card" data-title="Sales Talking Points" data-category="Sales Tips" data-order="4">
+          <div class="thumb people"><span class="badge green">SALES</span><div class="thumb-title">Sales<br>Talking Points</div><div class="play"></div><span class="duration">3:45</span></div>
+          <div class="card-body"><h3>Sales Talking Points</h3><p>Key value messages and objection handling to help reps sell with confidence.</p><span class="pill green">Sales Tips</span><button class="watch-btn" data-video="https://player.vimeo.com/video/000000000" data-video-title="Sales Talking Points" type="button">▶ Watch Now</button></div>
+        </article>
+        <article class="video-card" data-title="Chairside Workflow" data-category="Restoratives Rodin 3D" data-order="5">
+          <div class="thumb green"><span class="badge blue">8 MIN</span><div class="thumb-title">Chairside<br>Workflow</div><div class="play"></div><span class="duration">8:08</span></div>
+          <div class="card-body"><h3>Chairside Workflow</h3><p>See how Pac-Dent products fit into a complete restorative and digital workflow.</p><span class="pill">Workflow</span><button class="watch-btn" data-video="https://player.vimeo.com/video/000000000" data-video-title="Chairside Workflow" type="button">▶ Watch Now</button></div>
+        </article>
+        <article class="video-card" data-title="Q3 Promotions Overview" data-category="Promotions Sales Tips" data-order="6">
+          <div class="thumb"><span class="badge">PROMO</span><div class="thumb-title">Q3 Promo<br>Overview</div><div class="play"></div><span class="duration">4:20</span></div>
+          <div class="card-body"><h3>Q3 Promotions Overview</h3><p>Review current promotional items, positioning, and suggested dealer conversation starters.</p><span class="pill orange">Promotions</span><button class="watch-btn" data-video="https://player.vimeo.com/video/000000000" data-video-title="Q3 Promotions Overview" type="button">▶ Watch Now</button></div>
+        </article>
+      </div>
+      <div id="emptyState" class="empty">No training videos match your search yet.</div>
+
+      <div id="resources" class="section-head" style="margin-top:42px;">
+        <div>
+          <h2>Downloads & Resources</h2>
+          <p>Attach your sell sheets, product guides, IFUs, and promo flyers here.</p>
+        </div>
+        <a style="color:var(--pd-blue);font-weight:900" href="#top">Back to top ↑</a>
+      </div>
+      <div class="resource-grid">
+        <a class="resource-card" href="#" target="_blank" rel="noopener"><span class="file-icon">PDF</span><span><strong>Rodin Chroma Flash Sell Sheet</strong><span>PDF • Replace link</span></span></a>
+        <a class="resource-card" href="#" target="_blank" rel="noopener"><span class="file-icon blue">PDF</span><span><strong>EZAim Product Guide</strong><span>PDF • Replace link</span></span></a>
+        <a class="resource-card" href="#" target="_blank" rel="noopener"><span class="file-icon green">PDF</span><span><strong>OptiComp Clinical Guide</strong><span>PDF • Replace link</span></span></a>
+        <a class="resource-card" href="#" target="_blank" rel="noopener"><span class="file-icon orange">PDF</span><span><strong>Promotions Overview</strong><span>PDF • Replace link</span></span></a>
+      </div>
+    </section>
+  </main>
+
+  <div id="modal" class="modal" aria-hidden="true" role="dialog" aria-label="Training video modal">
+    <div class="modal-card">
+      <div class="modal-head"><h3 id="modalTitle">Training Video</h3><button class="close" id="closeModal" type="button" aria-label="Close video">×</button></div>
+      <div class="video-frame" id="videoFrame"></div>
+    </div>
+  </div>
+
+  <script>
+    // DEMO ONLY: client-side passwords are easy to view in page source.
+    // For real protection, use Shopify customer tags + a page-lock app, or protect the hosted page server-side.
+    const DEMO_PASSWORD = 'dealer2026';
+
+    const loginScreen = document.getElementById('loginScreen');
+    const portal = document.getElementById('portal');
+    const loginForm = document.getElementById('loginForm');
+    const loginError = document.getElementById('loginError');
+    const accessToast = document.getElementById('accessToast');
+
+    function notifyParentToScroll(){
+      if(window.parent && window.parent !== window){
+        window.parent.postMessage({type:'dealerTrainingScrollToFrame'}, '*');
+      }
+    }
+
+    function showAccessToast(){
+      if(!accessToast) return;
+      accessToast.classList.add('show');
+      window.setTimeout(() => accessToast.classList.remove('show'), 2200);
+    }
+
+    function showPortal(freshLogin){
+      loginScreen.hidden = true;
+      loginScreen.style.display = 'none';
+      portal.hidden = false;
+      portal.removeAttribute('hidden');
+      portal.style.display = '';
+      document.body.classList.add('is-unlocked');
+
+      requestAnimationFrame(function(){
+        postHeight();
+        window.scrollTo({top:0, behavior:freshLogin ? 'smooth' : 'auto'});
+        if(freshLogin){
+          notifyParentToScroll();
+          showAccessToast();
+        }
+      });
+    }
+
+    function showLogin(){
+      portal.hidden = true;
+      portal.style.display = 'none';
+      loginScreen.hidden = false;
+      loginScreen.style.display = 'grid';
+      document.body.classList.remove('is-unlocked');
+      postHeight();
+    }
+
+    if(sessionStorage.getItem('pdDealerTrainingAccess') === 'yes') showPortal(false); else showLogin();
+
+    loginForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      const code = document.getElementById('accessCode').value.trim();
+      if(code === DEMO_PASSWORD){
+        sessionStorage.setItem('pdDealerTrainingAccess','yes');
+        loginError.style.display='none';
+        showPortal(true);
+      } else {
+        loginError.style.display='block';
+        postHeight();
+      }
+    });
+    const searchInput = document.getElementById('searchInput');
+    const chips = Array.from(document.querySelectorAll('.chip'));
+    const cards = Array.from(document.querySelectorAll('.video-card'));
+    const emptyState = document.getElementById('emptyState');
+    const sortSelect = document.getElementById('sortSelect');
+    let activeFilter = 'all';
+
+    function applyFilters(){
+      const q = searchInput.value.trim().toLowerCase();
+      let visible = 0;
+      let sortedCards = [...cards];
+      if(sortSelect.value === 'az'){
+        sortedCards.sort((a,b)=>a.dataset.title.localeCompare(b.dataset.title));
+      } else {
+        sortedCards.sort((a,b)=>Number(a.dataset.order)-Number(b.dataset.order));
+      }
+      sortedCards.forEach(card => card.parentElement.appendChild(card));
+      sortedCards.forEach(card => {
+        const title = card.dataset.title.toLowerCase();
+        const category = card.dataset.category.toLowerCase();
+        const text = card.innerText.toLowerCase();
+        const matchesSearch = !q || title.includes(q) || category.includes(q) || text.includes(q);
+        const matchesFilter = activeFilter === 'all' || category.includes(activeFilter.toLowerCase());
+        const show = matchesSearch && matchesFilter;
+        card.style.display = show ? '' : 'none';
+        if(show) visible++;
+      });
+      emptyState.style.display = visible ? 'none' : 'block';
+      postHeight();
+    }
+    searchInput.addEventListener('input', applyFilters);
+    sortSelect.addEventListener('change', applyFilters);
+    chips.forEach(chip => chip.addEventListener('click', function(){
+      chips.forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      activeFilter = chip.dataset.filter;
+      applyFilters();
+    }));
+
+    const modal = document.getElementById('modal');
+    const videoFrame = document.getElementById('videoFrame');
+    const modalTitle = document.getElementById('modalTitle');
+    document.querySelectorAll('.watch-btn').forEach(btn => {
+      btn.addEventListener('click', function(){
+        const src = btn.dataset.video;
+        modalTitle.textContent = btn.dataset.videoTitle || 'Training Video';
+        videoFrame.innerHTML = '<iframe src="' + src + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="' + modalTitle.textContent.replace(/"/g,'') + '"></iframe>';
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden','false');
+      });
+    });
+    function closeVideo(){
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+      videoFrame.innerHTML = '';
+      postHeight();
+    }
+    document.getElementById('closeModal').addEventListener('click', closeVideo);
+    modal.addEventListener('click', e => { if(e.target === modal) closeVideo(); });
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') closeVideo(); });
+
+    function postHeight(){
+      const height = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+      if(window.parent && window.parent !== window){
+        window.parent.postMessage({type:'dealerTrainingHeight', height:height}, '*');
+      }
+    }
+    window.addEventListener('load', postHeight);
+    window.addEventListener('resize', postHeight);
+    if('ResizeObserver' in window){ new ResizeObserver(postHeight).observe(document.body); }
+    setTimeout(postHeight, 500);
+  </script>
+</body>
+</html>
