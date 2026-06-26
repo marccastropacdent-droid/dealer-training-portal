@@ -302,6 +302,21 @@
       position:fixed;inset:0;background:rgba(3,12,24,.78);display:none;align-items:center;justify-content:center;padding:22px;z-index:50
     }
     .modal.open{display:flex}
+    /* When this page is loaded inside a Shopify iframe, the iframe height is usually expanded
+       to fit all content. A fixed modal would center itself inside that very tall iframe,
+       which can make it look like the Watch Video button did nothing. This keeps the video
+       modal near the top of the iframe and the parent page scrolls to it. */
+    body.embedded-in-frame .modal{
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      bottom:auto;
+      min-height:100vh;
+      align-items:flex-start;
+      justify-content:center;
+      padding-top:28px;
+    }
     .modal-card{background:#071c36;border-radius:20px;max-width:960px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.45);overflow:hidden;color:#fff}
     .modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.12)}
     .modal-head h3{margin:0;font-size:18px}.close{border:0;background:rgba(255,255,255,.12);color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:22px}
@@ -482,11 +497,38 @@
     const loginForm = document.getElementById('loginForm');
     const loginError = document.getElementById('loginError');
     const accessToast = document.getElementById('accessToast');
+    const isEmbeddedInFrame = window.parent && window.parent !== window;
+    if(isEmbeddedInFrame){
+      document.body.classList.add('embedded-in-frame');
+    }
 
     function notifyParentToScroll(){
-      if(window.parent && window.parent !== window){
+      if(isEmbeddedInFrame){
         window.parent.postMessage({type:'dealerTrainingScrollToFrame'}, '*');
       }
+    }
+
+    function scrollPortalToOffset(offset, behavior){
+      const topOffset = Math.max(0, Number(offset) || 0);
+      if(isEmbeddedInFrame){
+        window.parent.postMessage({
+          type:'dealerTrainingScrollToOffset',
+          offset:topOffset,
+          behavior:behavior || 'smooth'
+        }, '*');
+      }
+      window.scrollTo({top:topOffset, behavior:behavior || 'smooth'});
+    }
+
+    function scrollToAnchorTarget(hash){
+      if(!hash || hash === '#') return;
+      let offset = 0;
+      if(hash !== '#top') {
+        const target = document.querySelector(hash);
+        if(!target) return;
+        offset = target.getBoundingClientRect().top + window.pageYOffset - 16;
+      }
+      scrollPortalToOffset(offset, 'smooth');
     }
 
     function showAccessToast(){
@@ -575,6 +617,15 @@
       applyFilters();
     }));
 
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', function(e){
+        const hash = link.getAttribute('href');
+        if(!hash || hash === '#') return;
+        e.preventDefault();
+        scrollToAnchorTarget(hash);
+      });
+    });
+
     const modal = document.getElementById('modal');
     const videoFrame = document.getElementById('videoFrame');
     const modalTitle = document.getElementById('modalTitle');
@@ -585,6 +636,10 @@
         videoFrame.innerHTML = '<iframe src="' + src + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="' + modalTitle.textContent.replace(/"/g,'') + '"></iframe>';
         modal.classList.add('open');
         modal.setAttribute('aria-hidden','false');
+        requestAnimationFrame(function(){
+          postHeight();
+          scrollPortalToOffset(0, 'smooth');
+        });
       });
     });
     function closeVideo(){
